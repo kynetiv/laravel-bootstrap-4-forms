@@ -190,6 +190,13 @@ class FormBuilder {
      * @var string
      */
     private $_help;
+    
+    /**
+     * Input help text position
+     *
+     * @var string
+     */
+    private $_helpPosition;
 
     /**
      * Input color
@@ -868,6 +875,16 @@ class FormBuilder {
 
         return $this->_help ? '<small id="' . $id . '" class="form-text text-muted">' . $this->_e($this->_help) . '</small>' : '';
     }
+    
+    /**
+     * Return a help text position
+     *
+     * @return string
+     */
+    private function _getHelpPosition(): string
+    {
+        return $this->_helpPosition;
+    }
 
     /**
      * Return a prefix id HTML element
@@ -1018,11 +1035,39 @@ class FormBuilder {
             $inputGroupOpen .= '<div class="input-group">';
             $inputGroupClose .= '</div>';
         }
-
-	    $this->_resetFlags();
-
-	    return $formGroupOpen . $label . $inputGroupOpen . $prefix . $field . $suffix . $inputGroupClose . $help . $error . $formGroupClose;
+        
+        $wrapper = [
+            'formGroupOpen'   => $formGroupOpen,
+            'label'           => $label,
+            'inputGroupOpen'  => $inputGroupOpen,
+            'prefix'          => $prefix,
+            'field'           => $field,
+            'suffix'          => $suffix,
+            'inputGroupClose' => $inputGroupClose,
+            'help'            => $help,
+            'error'           => $error,
+            'formGroupClose'  => $formGroupClose
+        ];
+        
+        $html = $this->_modifyWrapperPositions($wrapper);
+        
+        $this->_resetFlags();
+        
+        return $html;
     }
+    
+    private function _modifyWrapperPositions(array $wrapper): string
+    {
+       if ($this->_getHelpPosition()) {
+            $oldIndex = array_search('help', array_keys($wrapper));
+            $insertBeforeIndex = array_search('inputGroupOpen', array_keys($wrapper));
+            $movedItem = array_splice($wrapper, $oldIndex, 1);
+            array_splice($wrapper, $insertBeforeIndex, 0, $movedItem);
+       };
+       
+       return implode('', $wrapper);
+    }
+    
 
     /**
      * Return a validation error message
@@ -1069,6 +1114,7 @@ class FormBuilder {
         $this->_label = null;
         $this->_options = [];
         $this->_help = null;
+        $this->_helpPosition = null;
         $this->_class = null;
         $this->_prefix = null;
         $this->_suffix = null;
