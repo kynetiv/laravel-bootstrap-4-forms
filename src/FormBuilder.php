@@ -887,7 +887,7 @@ class FormBuilder {
      */
     private function _getHelpPosition(): string
     {
-        return $this->_helpPosition;
+        return $this->_helpPosition ? $this->_helpPosition : '';
     }
 
     /**
