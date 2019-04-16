@@ -306,10 +306,14 @@ class FormService {
      * Set a help text
      *
      * @param string $text
+     * @param string $position
      * @return FormService
      */
-    public function help(string $text): FormService
+    public function help(string $text, $position = 'below'): FormService
     {
+        if ($position !== 'below') {
+            $this->_set('helpPosition', 'above');
+        }
         return $this->_set('help', $text);
     }
 
